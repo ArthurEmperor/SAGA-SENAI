@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+  <title>Diagnóstico de Conectividade</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: #f4f7fc;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
+
+
+    .app-container {
+      max-width: 1200px;
+      width: 100%;
+      background: white;
+      border-radius: 32px;
+      box-shadow: 0 20px 60px rgba(0, 20, 40, 0.12);
+      overflow: hidden;
+      padding: 24px;
+      transition: all 0.2s;
+    }
+
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 28px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #e9edf4;
+    }
+
+    .header h1 {
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: #0b2b4a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header h1 small {
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: #5b7a9a;
+      margin-left: 8px;
+    }
+
+    .header .badge {
+      background: #eef3fa;
+      padding: 6px 16px;
+      border-radius: 40px;
+      color: #1f5b8a;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+
+    .tabs {
+      display: flex;
+      gap: 6px;
+      background: #f0f4fa;
+      border-radius: 60px;
+      padding: 4px;
+      margin-bottom: 28px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px 8px;
+      border: none;
+      background: transparent;
+      border-radius: 40px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #4a6a8a;
+      cursor: pointer;
+      transition: 0.2s;
+      text-align: center;
+    }
+
+    .tab-btn.active {
+      background: white;
+      color: #0b2b4a;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    }
+
+    .tab-btn:hover:not(.active) {
+      background: rgba(255,255,255,0.5);
+    }
+
+
+    .panel {
+      display: none;
+      animation: fade 0.25s ease;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes fade {
+      0% { opacity: 0.4; transform: translateY(6px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+
+    .client-area {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .client-card {
+      background: #f9fbfe;
+      border-radius: 24px;
+      padding: 24px;
+      border: 1px solid #e9edf4;
+    }
+
+    .client-card h2 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #0b2b4a;
+      margin-bottom: 6px;
+    }
+
+    .client-card .sub {
+      color: #6a8aaa;
+      font-size: 0.9rem;
+      margin-bottom: 18px;
+    }
+
+    .test-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 16px;
+      margin: 18px 0 22px;
+    }
+
+    .metric {
+      background: white;
+      border-radius: 16px;
+      padding: 14px 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+      border: 1px solid #eef2f7;
+      text-align: center;
+    }
+
+    .metric .label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: #7a9ab9;
+    }
+
+    .metric .value {
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: #0b2b4a;
+      margin-top: 4px;
+    }
+
+    .metric .unit {
+      font-size: 0.75rem;
+      color: #7a9ab9;
+      font-weight: 400;
+    }
+
+    .metric .status-badge {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 2px 12px;
+      border-radius: 40px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      background: #e8f0e8;
+      color: #1e7a3a;
+    }
+
+    .metric .status-badge.fail {
+      background: #fde8e8;
+      color: #b33a3a;
+    }
+
+    .btn-primary {
+      background: #1a6bb0;
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 60px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 20px rgba(26, 107, 176, 0.25);
+    }
+
+    .btn-primary:hover {
+      background: #135a9a;
+      transform: scale(1.02);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.97);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      pointer-events: none;
+      filter: grayscale(0.3);
+    }
+
+    .log-area {
+      background: white;
+      border-radius: 16px;
+      padding: 16px 20px;
+      border: 1px solid #eef2f7;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: #1f3a57;
+      max-height: 120px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      line-height: 1.6;
+      margin-top: 16px;
+    }
+
+    .log-area .log-entry {
+      border-bottom: 1px solid #f0f4fa;
+      padding: 4px 0;
+    }
+
+    .log-area .log-entry:last-child {
+      border-bottom: none;
+    }
+
+
+    .operator-area {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .client-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .client-item {
+      background: #f9fbfe;
+      border-radius: 16px;
+      padding: 16px 20px;
+      border: 1px solid #e9edf4;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      transition: 0.15s;
+    }
+
+    .client-item:hover {
+      background: #f4f8ff;
+      border-color: #c5d8ec;
+    }
+
+    .client-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .client-info .name {
+      font-weight: 600;
+      color: #0b2b4a;
+    }
+
+    .client-info .detail {
+      font-size: 0.85rem;
+      color: #6a8aaa;
+    }
+
+    .client-status {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 10px;
+      display: inline-block;
+    }
+
+    .status-dot.online {
+      background: #2b9c5e;
+    }
+    .status-dot.offline {
+      background: #d44c4c;
+    }
+    .status-dot.warning {
+      background: #e8a838;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #c5d8ec;
+      padding: 6px 18px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #1f5b8a;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    .btn-outline:hover {
+      background: #e9f0fa;
+      border-color: #8fb0d4;
+    }
+
+
+    @media (max-width: 640px) {
+      .app-container {
+        padding: 16px;
+        border-radius: 24px;
+      }
+      .header h1 {
+        font-size: 1.2rem;
+      }
+      .header h1 small {
+        font-size: 0.7rem;
+        display: block;
+        margin-left: 0;
+      }
+      .test-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .client-item {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .client-status {
+        justify-content: space-between;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .test-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="app-container">
+
+
+  <header class="header">
+    <h1>
+      📶 Diagnóstico Conectividade
+      <small>ISP Solution</small>
+    </h1>
+    <span class="badge">v1.0 · simulação</span>
+  </header>
+
+  <!-- TABS -->
+  <div class="tabs" role="tablist">
+    <button class="tab-btn active" data-tab="cliente" role="tab">📱 Cliente</button>
+    <button class="tab-btn" data-tab="operador" role="tab">🖥️ Operador</button>
+  </div>
+
+
+  <div id="panel-cliente" class="panel active" role="tabpanel">
+    <div class="client-area">
+      <div class="client-card">
+        <h2>🧪 Teste de conectividade</h2>
+        <p class="sub">Execute os testes diretamente do seu dispositivo para diagnosticar problemas.</p>
+
+        <div class="test-grid" id="metricas-cliente">
+          <div class="metric">
+            <div class="label">Ping (ms)</div>
+            <div class="value" id="ping-value">--</div>
+            <div class="unit">ms</div>
+          </div>
+          <div class="metric">
+            <div class="label">Download</div>
+            <div class="value" id="down-value">--</div>
+            <div class="unit">Mbps</div>
+          </div>
+          <div class="metric">
+            <div class="label">Upload</div>
+            <div class="value" id="up-value">--</div>
+            <div class="unit">Mbps</div>
+          </div>
+          <div class="metric">
+            <div class="label">Perda de pacotes</div>
+            <div class="value" id="loss-value">--</div>
+            <div class="unit">%</div>
+            <div id="loss-badge" class="status-badge">—</div>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="btn-testar">
+          ⚡ Executar testes agora
+        </button>
+
+        <div class="log-area" id="log-cliente">
+          <div class="log-entry">🟢 Aguardando início dos testes...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="panel-operador" class="panel" role="tabpanel">
+    <div class="operator-area">
+      <h2 style="font-weight:600; font-size:1.3rem; color:#0b2b4a;">👥 Clientes monitorados</h2>
+      <p style="color:#6a8aaa; margin-top:-8px;">Status baseado no último diagnóstico de cada cliente.</p>
+
+      <div class="client-list" id="lista-clientes">
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  (function() {
+    'use strict';
+
+
+    const clientes = [
+      { id: 1, nome: 'João Silva', contrato: '12345-6', ultimoStatus: 'online', ultimoPing: 12, ultimoDown: 89, ultimoUp: 42, ultimoLoss: 0.2 },
+      { id: 2, nome: 'Maria Oliveira', contrato: '78901-2', ultimoStatus: 'online', ultimoPing: 8, ultimoDown: 112, ultimoUp: 55, ultimoLoss: 0.0 },
+      { id: 3, nome: 'Carlos Souza', contrato: '34567-8', ultimoStatus: 'warning', ultimoPing: 45, ultimoDown: 34, ultimoUp: 12, ultimoLoss: 4.7 },
+      { id: 4, nome: 'Ana Costa', contrato: '90123-4', ultimoStatus: 'offline', ultimoPing: null, ultimoDown: null, ultimoUp: null, ultimoLoss: null },
+      { id: 5, nome: 'Pedro Rocha', contrato: '56789-0', ultimoStatus: 'online', ultimoPing: 7, ultimoDown: 205, ultimoUp: 98, ultimoLoss: 0.1 },
+    ];
+
+
+    const tabs = document.querySelectorAll('.tab-btn');
+    const panels = {
+      cliente: document.getElementById('panel-cliente'),
+      operador: document.getElementById('panel-operador')
+    };
+
+
+    const pingEl = document.getElementById('ping-value');
+    const downEl = document.getElementById('down-value');
+    const upEl = document.getElementById('up-value');
+    const lossEl = document.getElementById('loss-value');
+    const lossBadge = document.getElementById('loss-badge');
+    const logEl = document.getElementById('log-cliente');
+    const btnTestar = document.getElementById('btn-testar');
+
+
+    tabs.forEach(btn => {
+      btn.addEventListener('click', function() {
+        tabs.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        const target = this.dataset.tab;
+        Object.keys(panels).forEach(key => {
+          panels[key].classList.toggle('active', key === target);
+        });
+      });
+    });
+
+
+    function addLog(msg, isGood = true) {
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      entry.textContent = msg;
+      logEl.appendChild(entry);
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function clearLog() {
+      logEl.innerHTML = '';
+    }
+
+
+    function simularTeste() {
+      return new Promise((resolve) => {
+        const delay = 100 + Math.random() * 700;
+        setTimeout(() => {
+          const ping = Math.round(5 + Math.random() * 40);
+          const down = Math.round(10 + Math.random() * 190);
+          const up = Math.round(5 + Math.random() * 95);
+          const loss = Math.round((Math.random() * 6) * 10) / 10;
+          resolve({ ping, down, up, loss });
+        }, delay);
+      });
+    }
+
+
+    function atualizarMetricas(resultado) {
+      const { ping, down, up, loss } = resultado;
+      pingEl.textContent = ping;
+      downEl.textContent = down;
+      upEl.textContent = up;
+      lossEl.textContent = loss.toFixed(1);
+
+
+      if (loss < 1.0) {
+        lossBadge.textContent = '✅ Ótimo';
+        lossBadge.className = 'status-badge';
+      } else if (loss < 3.0) {
+        lossBadge.textContent = '⚠️ Moderado';
+        lossBadge.className = 'status-badge';
+      } else {
+        lossBadge.textContent = '❌ Alto';
+        lossBadge.className = 'status-badge fail';
+      }
+    }
+
+
+    async function executarTestes() {
+      btnTestar.disabled = true;
+      btnTestar.textContent = '⏳ Testando...';
+      clearLog();
+      addLog('🔍 Iniciando diagnóstico de conectividade...');
+
+      try {
+        addLog('📡 Teste de ping...');
+        const resultado = await simularTeste();
+        addLog(`✅ Ping: ${resultado.ping} ms`);
+        addLog(`📥 Download: ${resultado.down} Mbps`);
+        addLog(`📤 Upload: ${resultado.up} Mbps`);
+        addLog(`📉 Perda: ${resultado.loss.toFixed(1)}%`);
+
+
+        atualizarMetricas(resultado);
+
+
+        const clienteExemplo = clientes[0];
+        clienteExemplo.ultimoStatus = resultado.loss < 3.0 ? 'online' : (resultado.loss < 5.0 ? 'warning' : 'offline');
+        clienteExemplo.ultimoPing = resultado.ping;
+        clienteExemplo.ultimoDown = resultado.down;
+        clienteExemplo.ultimoUp = resultado.up;
+        clienteExemplo.ultimoLoss = resultado.loss;
+
+        renderizarClientes();
+
+        addLog('✔️ Diagnóstico concluído com sucesso!');
+      } catch (err) {
+        addLog('❌ Erro durante os testes: ' + err.message, false);
+      } finally {
+        btnTestar.disabled = false;
+        btnTestar.textContent = '⚡ Executar testes agora';
+      }
+    }
+
+    function renderizarClientes() {
+      const container = document.getElementById('lista-clientes');
+      container.innerHTML = '';
+
+      clientes.forEach(cliente => {
+        const item = document.createElement('div');
+        item.className = 'client-item';
+
+        // Info
+        const info = document.createElement('div');
+        info.className = 'client-info';
+        info.innerHTML = `
+          <span class="name">${cliente.nome}</span>
+          <span class="detail">Contrato ${cliente.contrato} · Ping ${cliente.ultimoPing ?? '—'} ms · Down ${cliente.ultimoDown ?? '—'} Mbps</span>
+        `;
+
+        const statusDiv = document.createElement('div');
+        statusDiv.className = 'client-status';
+
+        const indicator = document.createElement('span');
+        indicator.className = 'status-indicator';
+        const dot = document.createElement('span');
+        dot.className = `status-dot ${cliente.ultimoStatus}`;
+        const label = document.createElement('span');
+        const statusMap = {
+          online: '🟢 Online',
+          warning: '🟡 Atenção',
+          offline: '🔴 Offline'
+        };
+        label.textContent = statusMap[cliente.ultimoStatus] || 'Desconhecido';
+        indicator.appendChild(dot);
+        indicator.appendChild(label);
+
+
+        const btnDetalhes = document.createElement('button');
+        btnDetalhes.className = 'btn-outline';
+        btnDetalhes.textContent = 'Ver detalhes';
+        btnDetalhes.addEventListener('click', () => {
+          alert(`📋 Detalhes de ${cliente.nome}\nContrato: ${cliente.contrato}\nStatus: ${cliente.ultimoStatus}\nPing: ${cliente.ultimoPing ?? 'N/A'} ms\nDownload: ${cliente.ultimoDown ?? 'N/A'} Mbps\nUpload: ${cliente.ultimoUp ?? 'N/A'} Mbps\nPerda: ${cliente.ultimoLoss ?? 'N/A'}%`);
+        });
+
+        statusDiv.appendChild(indicator);
+        statusDiv.appendChild(btnDetalhes);
+
+        item.appendChild(info);
+        item.appendChild(statusDiv);
+        container.appendChild(item);
+      });
+    }
+
+
+    function init() {
+      renderizarClientes();
+      
+      pingEl.textContent = '--';
+      downEl.textContent = '--';
+      upEl.textContent = '--';
+      lossEl.textContent = '--';
+      lossBadge.textContent = '—';
+      lossBadge.className = 'status-badge';
+      // Adiciona evento ao botão
+      btnTestar.addEventListener('click', executarTestes);
+    }
+
+    init();
+
+  })();
+</script>
+</body>
+</html>
