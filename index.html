@@ -2,9 +2,10 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
-  <title>Diagnóstico de Conectividade</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
+  <title>Plataforma · Diagnóstico de Conectividade</title>
   <style>
+    /* ===== RESET E BASE ===== */
     * {
       margin: 0;
       padding: 0;
@@ -13,248 +14,339 @@
     }
 
     body {
-      background: #f4f7fc;
+      background: #eef2f7;
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 16px;
+      padding: 20px;
     }
 
-
-    .app-container {
-      max-width: 1200px;
+    .app-wrapper {
+      max-width: 1300px;
       width: 100%;
-      background: white;
-      border-radius: 32px;
-      box-shadow: 0 20px 60px rgba(0, 20, 40, 0.12);
+      background: #ffffff;
+      border-radius: 40px;
+      box-shadow: 0 25px 70px rgba(0, 20, 40, 0.15);
       overflow: hidden;
-      padding: 24px;
+      padding: 28px;
       transition: all 0.2s;
     }
 
-
+    /* ===== HEADER ===== */
     .header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 16px;
       margin-bottom: 28px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid #e9edf4;
+      padding-bottom: 18px;
+      border-bottom: 2px solid #f0f4fa;
     }
 
-    .header h1 {
-      font-size: 1.6rem;
-      font-weight: 600;
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-left h1 {
+      font-size: 1.7rem;
+      font-weight: 700;
       color: #0b2b4a;
+    }
+
+    .header-left h1 small {
+      font-size: 0.85rem;
+      font-weight: 400;
+      color: #6a8aaa;
+      margin-left: 10px;
+    }
+
+    .badge-version {
+      background: #e2eaf3;
+      padding: 6px 18px;
+      border-radius: 40px;
+      color: #1f5b8a;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    .status-realtime {
       display: flex;
       align-items: center;
       gap: 8px;
-    }
-
-    .header h1 small {
-      font-size: 0.9rem;
-      font-weight: 400;
-      color: #5b7a9a;
-      margin-left: 8px;
-    }
-
-    .header .badge {
-      background: #eef3fa;
-      padding: 6px 16px;
+      background: #eaf5ea;
+      padding: 6px 16px 6px 12px;
       border-radius: 40px;
-      color: #1f5b8a;
+      color: #1d7a3a;
       font-size: 0.85rem;
       font-weight: 500;
     }
 
+    .status-realtime .pulse {
+      width: 10px;
+      height: 10px;
+      background: #2b9c5e;
+      border-radius: 50%;
+      display: inline-block;
+      animation: pulse 1.5s infinite;
+    }
 
+    @keyframes pulse {
+      0% { opacity: 0.4; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.2); }
+      100% { opacity: 0.4; transform: scale(0.9); }
+    }
+
+    /* ===== TABS ===== */
     .tabs {
       display: flex;
       gap: 6px;
       background: #f0f4fa;
       border-radius: 60px;
       padding: 4px;
-      margin-bottom: 28px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
     }
 
     .tab-btn {
       flex: 1;
-      padding: 12px 8px;
+      min-width: 120px;
+      padding: 14px 12px;
       border: none;
       background: transparent;
       border-radius: 40px;
       font-size: 0.95rem;
-      font-weight: 500;
+      font-weight: 600;
       color: #4a6a8a;
       cursor: pointer;
       transition: 0.2s;
       text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
     .tab-btn.active {
       background: white;
       color: #0b2b4a;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
     }
 
     .tab-btn:hover:not(.active) {
-      background: rgba(255,255,255,0.5);
+      background: rgba(255, 255, 255, 0.6);
     }
-
 
     .panel {
       display: none;
-      animation: fade 0.25s ease;
+      animation: fadeUp 0.3s ease;
     }
 
     .panel.active {
       display: block;
     }
 
-    @keyframes fade {
-      0% { opacity: 0.4; transform: translateY(6px); }
+    @keyframes fadeUp {
+      0% { opacity: 0.3; transform: translateY(12px); }
       100% { opacity: 1; transform: translateY(0); }
     }
 
-
-    .client-area {
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
+    /* ===== LAYOUT GERAL ===== */
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
     }
 
-    .client-card {
+    @media (max-width: 900px) {
+      .grid-2col {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ===== CARD PADRÃO ===== */
+    .card {
       background: #f9fbfe;
       border-radius: 24px;
       padding: 24px;
       border: 1px solid #e9edf4;
     }
 
-    .client-card h2 {
-      font-size: 1.2rem;
+    .card h3 {
+      font-size: 1.1rem;
       font-weight: 600;
       color: #0b2b4a;
       margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .client-card .sub {
+    .card .sub {
       color: #6a8aaa;
       font-size: 0.9rem;
-      margin-bottom: 18px;
+      margin-bottom: 20px;
     }
 
-    .test-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 16px;
-      margin: 18px 0 22px;
+    /* ===== SIMULADOR DE CELULAR (APP) ===== */
+    .phone-frame {
+      max-width: 360px;
+      margin: 0 auto;
+      background: #111;
+      border-radius: 48px;
+      padding: 14px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
     }
 
-    .metric {
-      background: white;
-      border-radius: 16px;
-      padding: 14px 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-      border: 1px solid #eef2f7;
-      text-align: center;
+    .phone-screen {
+      background: #ffffff;
+      border-radius: 34px;
+      overflow: hidden;
+      padding: 20px 16px 16px;
+      min-height: 480px;
     }
 
-    .metric .label {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-      color: #7a9ab9;
-    }
-
-    .metric .value {
-      font-size: 1.6rem;
+    .phone-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      font-size: 0.9rem;
       font-weight: 600;
       color: #0b2b4a;
+    }
+
+    .phone-header .time {
+      font-weight: 400;
+      color: #6a8aaa;
+    }
+
+    /* Métricas dentro do celular */
+    .metric-phone-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 16px 0 20px;
+    }
+
+    .metric-phone {
+      background: #f4f8ff;
+      border-radius: 14px;
+      padding: 12px 8px;
+      text-align: center;
+      border: 1px solid #e9edf4;
+    }
+
+    .metric-phone .label {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #7a9ab9;
+    }
+    .metric-phone .value {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #0b2b4a;
+    }
+    .metric-phone .unit {
+      font-size: 0.65rem;
+      color: #7a9ab9;
+    }
+
+    .wifi-bars {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 3px;
+      height: 28px;
       margin-top: 4px;
     }
-
-    .metric .unit {
-      font-size: 0.75rem;
-      color: #7a9ab9;
-      font-weight: 400;
-    }
-
-    .metric .status-badge {
-      display: inline-block;
-      margin-top: 6px;
-      padding: 2px 12px;
-      border-radius: 40px;
-      font-size: 0.7rem;
-      font-weight: 600;
-      background: #e8f0e8;
-      color: #1e7a3a;
-    }
-
-    .metric .status-badge.fail {
-      background: #fde8e8;
-      color: #b33a3a;
-    }
-
-    .btn-primary {
+    .wifi-bars span {
+      display: block;
+      width: 6px;
       background: #1a6bb0;
-      color: white;
-      border: none;
-      padding: 14px 28px;
-      border-radius: 60px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s;
-      display: inline-flex;
+      border-radius: 4px;
+      transition: 0.3s;
+    }
+    .wifi-bars span:nth-child(1) { height: 8px; }
+    .wifi-bars span:nth-child(2) { height: 14px; }
+    .wifi-bars span:nth-child(3) { height: 20px; }
+    .wifi-bars span:nth-child(4) { height: 26px; }
+    .wifi-bars span.inactive { background: #d0dcec; }
+
+    /* ===== BACK-END / FLUXO ===== */
+    .flow-diagram {
+      display: flex;
       align-items: center;
-      gap: 10px;
-      box-shadow: 0 8px 20px rgba(26, 107, 176, 0.25);
-    }
-
-    .btn-primary:hover {
-      background: #135a9a;
-      transform: scale(1.02);
-    }
-
-    .btn-primary:active {
-      transform: scale(0.97);
-    }
-
-    .btn-primary:disabled {
-      opacity: 0.6;
-      pointer-events: none;
-      filter: grayscale(0.3);
-    }
-
-    .log-area {
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 12px;
       background: white;
+      padding: 24px 16px;
+      border-radius: 20px;
+      border: 1px solid #e9edf4;
+      margin-top: 8px;
+    }
+
+    .flow-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      background: #f0f6fe;
+      padding: 12px 20px;
       border-radius: 16px;
-      padding: 16px 20px;
-      border: 1px solid #eef2f7;
+      min-width: 80px;
+    }
+
+    .flow-node .icon {
+      font-size: 2rem;
+    }
+    .flow-node .label {
+      font-weight: 600;
+      font-size: 0.8rem;
+      color: #0b2b4a;
+    }
+    .flow-node .sub-label {
+      font-size: 0.65rem;
+      color: #6a8aaa;
+    }
+    .flow-arrow {
+      font-size: 1.8rem;
+      color: #1a6bb0;
+      font-weight: 300;
+    }
+
+    .log-stream {
+      background: #0b1a2a;
+      color: #b0d4f0;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.85rem;
-      color: #1f3a57;
-      max-height: 120px;
+      font-size: 0.75rem;
+      padding: 16px;
+      border-radius: 16px;
+      max-height: 200px;
       overflow-y: auto;
-      white-space: pre-wrap;
-      line-height: 1.6;
       margin-top: 16px;
+      line-height: 1.8;
     }
-
-    .log-area .log-entry {
-      border-bottom: 1px solid #f0f4fa;
-      padding: 4px 0;
+    .log-stream .log-line {
+      border-bottom: 1px solid #1a3050;
+      padding: 2px 0;
     }
-
-    .log-area .log-entry:last-child {
+    .log-stream .log-line:last-child {
       border-bottom: none;
     }
+    .log-stream .time-stamp {
+      color: #6a8aaa;
+      margin-right: 12px;
+    }
 
-
-    .operator-area {
+    /* ===== OPERADOR (PAINEL) ===== */
+    .operator-layout {
       display: flex;
       flex-direction: column;
       gap: 24px;
@@ -263,11 +355,11 @@
     .client-list {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
 
     .client-item {
-      background: #f9fbfe;
+      background: white;
       border-radius: 16px;
       padding: 16px 20px;
       border: 1px solid #e9edf4;
@@ -276,214 +368,702 @@
       align-items: center;
       flex-wrap: wrap;
       gap: 12px;
+      cursor: pointer;
       transition: 0.15s;
     }
 
     .client-item:hover {
-      background: #f4f8ff;
-      border-color: #c5d8ec;
-    }
-
-    .client-info {
-      display: flex;
-      flex-direction: column;
+      border-color: #1a6bb0;
+      box-shadow: 0 4px 12px rgba(26, 107, 176, 0.08);
     }
 
     .client-info .name {
-      font-weight: 600;
+      font-weight: 700;
       color: #0b2b4a;
     }
-
     .client-info .detail {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: #6a8aaa;
     }
 
-    .client-status {
+    .client-status-badge {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
       flex-wrap: wrap;
     }
 
-    .status-indicator {
+    .status-tag {
       display: flex;
       align-items: center;
       gap: 6px;
-      font-size: 0.85rem;
-      font-weight: 500;
+      padding: 4px 14px;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .status-tag.online {
+      background: #e1f3e6;
+      color: #1d7a3a;
+    }
+    .status-tag.warning {
+      background: #fff2d9;
+      color: #a86f1a;
+    }
+    .status-tag.offline {
+      background: #fde8e8;
+      color: #b33a3a;
     }
 
-    .status-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 10px;
-      display: inline-block;
-    }
-
-    .status-dot.online {
-      background: #2b9c5e;
-    }
-    .status-dot.offline {
-      background: #d44c4c;
-    }
-    .status-dot.warning {
-      background: #e8a838;
-    }
-
-    .btn-outline {
+    .btn-outline-sm {
       background: transparent;
       border: 1px solid #c5d8ec;
-      padding: 6px 18px;
+      padding: 4px 16px;
       border-radius: 40px;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-weight: 500;
       color: #1f5b8a;
       cursor: pointer;
       transition: 0.15s;
     }
-
-    .btn-outline:hover {
+    .btn-outline-sm:hover {
       background: #e9f0fa;
       border-color: #8fb0d4;
     }
 
+    /* ===== MODAL DE DETALHES ===== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      z-index: 999;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
 
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-box {
+      background: white;
+      max-width: 500px;
+      width: 100%;
+      border-radius: 32px;
+      padding: 32px;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+      animation: fadeUp 0.25s ease;
+      position: relative;
+    }
+
+    .modal-box .close-modal {
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      font-size: 1.8rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #6a8aaa;
+    }
+
+    .modal-box .modal-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #0b2b4a;
+      margin-bottom: 4px;
+    }
+
+    .modal-box .modal-sub {
+      color: #6a8aaa;
+      margin-bottom: 20px;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f4fa;
+      font-size: 0.95rem;
+    }
+
+    .detail-row .label {
+      color: #6a8aaa;
+    }
+    .detail-row .value {
+      font-weight: 600;
+      color: #0b2b4a;
+    }
+
+    .recomendation-box {
+      margin-top: 20px;
+      background: #f0f7ff;
+      border-left: 4px solid #1a6bb0;
+      padding: 16px;
+      border-radius: 12px;
+    }
+    .recomendation-box strong {
+      color: #0b2b4a;
+    }
+
+    /* ===== BOTÃO PRINCIPAL ===== */
+    .btn-primary {
+      background: #1a6bb0;
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 60px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 8px 24px rgba(26, 107, 176, 0.3);
+      width: 100%;
+      justify-content: center;
+    }
+
+    .btn-primary:hover {
+      background: #135a9a;
+      transform: scale(1.02);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      pointer-events: none;
+      filter: grayscale(0.3);
+    }
+
+    /* ===== RESPONSIVO ===== */
     @media (max-width: 640px) {
-      .app-container {
+      .app-wrapper {
         padding: 16px;
         border-radius: 24px;
       }
-      .header h1 {
+      .header-left h1 {
         font-size: 1.2rem;
       }
-      .header h1 small {
-        font-size: 0.7rem;
+      .header-left h1 small {
         display: block;
         margin-left: 0;
+        font-size: 0.7rem;
       }
-      .test-grid {
+      .tabs .tab-btn {
+        min-width: 80px;
+        font-size: 0.8rem;
+        padding: 10px 6px;
+      }
+      .phone-frame {
+        max-width: 100%;
+        padding: 8px;
+      }
+      .metric-phone-grid {
         grid-template-columns: 1fr 1fr;
+      }
+      .flow-diagram {
+        flex-direction: column;
+      }
+      .flow-arrow {
+        transform: rotate(90deg);
       }
       .client-item {
         flex-direction: column;
         align-items: stretch;
       }
-      .client-status {
-        justify-content: space-between;
+      .modal-box {
+        padding: 24px;
+        margin: 16px;
       }
     }
 
-    @media (max-width: 420px) {
-      .test-grid {
-        grid-template-columns: 1fr;
-      }
-    }
+    /* helper */
+    .mt-16 { margin-top: 16px; }
+    .mb-8 { margin-bottom: 8px; }
+    .text-center { text-align: center; }
   </style>
 </head>
 <body>
-<div class="app-container">
 
+<div class="app-wrapper">
 
+  <!-- HEADER -->
   <header class="header">
-    <h1>
-      📶 Diagnóstico Conectividade
-      <small>ISP Solution</small>
-    </h1>
-    <span class="badge">v1.0 · simulação</span>
+    <div class="header-left">
+      <h1>
+        📶 Conectividade
+        <small>Plataforma Inteligente</small>
+      </h1>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+      <span class="badge-version">v2.0 · Protótipo</span>
+      <span class="status-realtime">
+        <span class="pulse"></span> Dados em tempo real
+      </span>
+    </div>
   </header>
 
   <!-- TABS -->
   <div class="tabs" role="tablist">
-    <button class="tab-btn active" data-tab="cliente" role="tab">📱 Cliente</button>
-    <button class="tab-btn" data-tab="operador" role="tab">🖥️ Operador</button>
+    <button class="tab-btn active" data-tab="cliente" role="tab">📱 App Cliente</button>
+    <button class="tab-btn" data-tab="backend" role="tab">☁️ Back-end</button>
+    <button class="tab-btn" data-tab="operador" role="tab">🖥️ Painel Operador</button>
   </div>
 
-
+  <!-- ============================================ -->
+  <!-- PANEL 1: APP CLIENTE (SIMULADOR DE CELULAR) -->
+  <!-- ============================================ -->
   <div id="panel-cliente" class="panel active" role="tabpanel">
-    <div class="client-area">
-      <div class="client-card">
-        <h2>🧪 Teste de conectividade</h2>
-        <p class="sub">Execute os testes diretamente do seu dispositivo para diagnosticar problemas.</p>
+    <div class="grid-2col">
+      <!-- Coluna Esquerda: Celular -->
+      <div>
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="phone-header">
+              <span>📶 ISP Solution</span>
+              <span class="time" id="phone-time">10:30</span>
+            </div>
+            <div style="background: #f0f6fe; padding: 12px; border-radius: 16px; margin-bottom: 12px;">
+              <div style="font-weight: 600; color: #0b2b4a;">Olá, João Silva</div>
+              <div style="font-size: 0.8rem; color: #6a8aaa;">Contrato: 12345-6</div>
+            </div>
 
-        <div class="test-grid" id="metricas-cliente">
-          <div class="metric">
-            <div class="label">Ping (ms)</div>
-            <div class="value" id="ping-value">--</div>
-            <div class="unit">ms</div>
-          </div>
-          <div class="metric">
-            <div class="label">Download</div>
-            <div class="value" id="down-value">--</div>
-            <div class="unit">Mbps</div>
-          </div>
-          <div class="metric">
-            <div class="label">Upload</div>
-            <div class="value" id="up-value">--</div>
-            <div class="unit">Mbps</div>
-          </div>
-          <div class="metric">
-            <div class="label">Perda de pacotes</div>
-            <div class="value" id="loss-value">--</div>
-            <div class="unit">%</div>
-            <div id="loss-badge" class="status-badge">—</div>
+            <div class="metric-phone-grid">
+              <div class="metric-phone">
+                <div class="label">Ping</div>
+                <div class="value" id="phone-ping">--</div>
+                <div class="unit">ms</div>
+              </div>
+              <div class="metric-phone">
+                <div class="label">Jitter</div>
+                <div class="value" id="phone-jitter">--</div>
+                <div class="unit">ms</div>
+              </div>
+              <div class="metric-phone">
+                <div class="label">Download</div>
+                <div class="value" id="phone-down">--</div>
+                <div class="unit">Mbps</div>
+              </div>
+              <div class="metric-phone">
+                <div class="label">Upload</div>
+                <div class="value" id="phone-up">--</div>
+                <div class="unit">Mbps</div>
+              </div>
+              <div class="metric-phone">
+                <div class="label">Perda</div>
+                <div class="value" id="phone-loss">--</div>
+                <div class="unit">%</div>
+              </div>
+              <div class="metric-phone">
+                <div class="label">Wi-Fi</div>
+                <div class="wifi-bars" id="phone-wifi">
+                  <span></span><span></span><span></span><span></span>
+                </div>
+                <div style="font-size:0.7rem; color:#6a8aaa;" id="phone-wifi-label">--</div>
+              </div>
+            </div>
+
+            <button class="btn-primary" id="btn-testar">
+              ⚡ Executar diagnóstico
+            </button>
+
+            <div style="margin-top: 12px; background: #f4f8ff; border-radius: 12px; padding: 10px; max-height: 100px; overflow-y: auto; font-size: 0.75rem; font-family: monospace; color: #1f3a57;" id="phone-log">
+              <div>🟢 Toque em "Executar diagnóstico" para iniciar.</div>
+            </div>
           </div>
         </div>
+      </div>
 
-        <button class="btn-primary" id="btn-testar">
-          ⚡ Executar testes agora
-        </button>
+      <!-- Coluna Direita: Explicação do App -->
+      <div class="card">
+        <h3>📱 Sobre o App Cliente</h3>
+        <p class="sub">O cliente instala e, com um toque, executa uma bateria completa de testes.</p>
+        <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 12px;">
+          <li style="display: flex; gap: 12px; align-items: center; background: white; padding: 12px; border-radius: 12px; border: 1px solid #e9edf4;">
+            <span style="font-size:1.8rem;">📡</span>
+            <div><strong>Testes completos</strong><br><span style="font-size:0.85rem; color:#6a8aaa;">Ping, Jitter, Download, Upload e Perda de pacotes.</span></div>
+          </li>
+          <li style="display: flex; gap: 12px; align-items: center; background: white; padding: 12px; border-radius: 12px; border: 1px solid #e9edf4;">
+            <span style="font-size:1.8rem;">📶</span>
+            <div><strong>Qualidade do Wi-Fi</strong><br><span style="font-size:0.85rem; color:#6a8aaa;">Medição da intensidade do sinal sem fio.</span></div>
+          </li>
+          <li style="display: flex; gap: 12px; align-items: center; background: white; padding: 12px; border-radius: 12px; border: 1px solid #e9edf4;">
+            <span style="font-size:1.8rem;">☁️</span>
+            <div><strong>Envio automático</strong><br><span style="font-size:0.85rem; color:#6a8aaa;">Os dados vão direto para o back-end em tempo real.</span></div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
 
-        <div class="log-area" id="log-cliente">
-          <div class="log-entry">🟢 Aguardando início dos testes...</div>
+  <!-- ============================================ -->
+  <!-- PANEL 2: BACK-END (INFRAESTRUTURA)          -->
+  <!-- ============================================ -->
+  <div id="panel-backend" class="panel" role="tabpanel">
+    <div class="card" style="margin-bottom: 24px;">
+      <h3>☁️ Infraestrutura e Comunicação</h3>
+      <p class="sub">O back-end gerencia a comunicação entre o app do cliente e o painel do operador.</p>
+
+      <div class="flow-diagram">
+        <div class="flow-node">
+          <span class="icon">📱</span>
+          <span class="label">App Cliente</span>
+          <span class="sub-label">Testes executados</span>
+        </div>
+        <span class="flow-arrow">➡️</span>
+        <div class="flow-node" style="background: #1a6bb0; color: white;">
+          <span class="icon">⚡</span>
+          <span class="label" style="color:white;">API & WebSocket</span>
+          <span class="sub-label" style="color:#b0d4f0;">Processamento real-time</span>
+        </div>
+        <span class="flow-arrow">➡️</span>
+        <div class="flow-node">
+          <span class="icon">🗄️</span>
+          <span class="label">Banco de Dados</span>
+          <span class="sub-label">PostgreSQL</span>
+        </div>
+        <span class="flow-arrow">➡️</span>
+        <div class="flow-node">
+          <span class="icon">🖥️</span>
+          <span class="label">Painel Operador</span>
+          <span class="sub-label">Dashboard e alertas</span>
+        </div>
+      </div>
+
+      <div style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div style="background: #eaf3fa; padding: 16px; border-radius: 16px;">
+          <div style="font-weight:600; color:#0b2b4a;">📊 Últimos diagnósticos</div>
+          <div id="backend-last-tests" style="font-size:0.9rem; color:#1f5b8a; margin-top:8px;">
+            <div>• João Silva - 15:32 - ✅ Online</div>
+            <div>• Maria Oliveira - 15:28 - ✅ Online</div>
+            <div>• Carlos Souza - 15:10 - ⚠️ Atenção</div>
+          </div>
+        </div>
+        <div style="background: #eaf3fa; padding: 16px; border-radius: 16px;">
+          <div style="font-weight:600; color:#0b2b4a;">📈 Métricas agregadas</div>
+          <div style="font-size:0.9rem; color:#1f5b8a; margin-top:8px;">
+            <div>• Clientes ativos: 5</div>
+            <div>• Testes hoje: 12</div>
+            <div>• Taxa de sucesso: 92%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Log do Backend -->
+      <div style="margin-top: 16px;">
+        <div style="font-weight:600; color:#0b2b4a; margin-bottom:6px;">📋 Log de eventos (tempo real)</div>
+        <div class="log-stream" id="backend-log">
+          <div class="log-line"><span class="time-stamp">[15:32:01]</span> 📱 Diagnóstico recebido de João Silva</div>
+          <div class="log-line"><span class="time-stamp">[15:32:02]</span> ✅ Dados processados e salvos no banco</div>
+          <div class="log-line"><span class="time-stamp">[15:32:03]</span> 🔔 Notificação enviada ao painel do operador</div>
         </div>
       </div>
     </div>
   </div>
 
-
+  <!-- ============================================ -->
+  <!-- PANEL 3: PAINEL OPERADOR                    -->
+  <!-- ============================================ -->
   <div id="panel-operador" class="panel" role="tabpanel">
-    <div class="operator-area">
-      <h2 style="font-weight:600; font-size:1.3rem; color:#0b2b4a;">👥 Clientes monitorados</h2>
-      <p style="color:#6a8aaa; margin-top:-8px;">Status baseado no último diagnóstico de cada cliente.</p>
+    <div class="operator-layout">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div>
+          <h2 style="font-weight:700; font-size:1.4rem; color:#0b2b4a;">👥 Clientes em atendimento</h2>
+          <p style="color:#6a8aaa;">Clique em um cliente para ver o diagnóstico detalhado.</p>
+        </div>
+        <span style="background:#e9edf4; padding:6px 16px; border-radius:40px; font-size:0.85rem;">Atualizado agora</span>
+      </div>
 
       <div class="client-list" id="lista-clientes">
+        <!-- Renderizado via JS -->
+      </div>
+
+      <!-- Área de recomendação / chamado ativo (mock) -->
+      <div class="card" style="background:#f4f9ff; border:2px dashed #c5d8ec;">
+        <h3>💡 Sugestão inteligente (baseada nos dados)</h3>
+        <p class="sub">O sistema analisa os testes e sugere ações para o operador.</p>
+        <div id="sugestao-dinamica" style="background:white; padding:16px; border-radius:16px; border-left:4px solid #1a6bb0;">
+          <strong>✅ Nenhum problema crítico no momento.</strong><br>
+          <span style="color:#6a8aaa;">Continue monitorando os clientes com status de atenção.</span>
+        </div>
       </div>
     </div>
   </div>
 
 </div>
 
+<!-- ============================================ -->
+<!-- MODAL DE DETALHES DO CLIENTE                -->
+<!-- ============================================ -->
+<div class="modal-overlay" id="modal-detalhes">
+  <div class="modal-box">
+    <button class="close-modal" id="modal-fechar">✕</button>
+    <div class="modal-title" id="modal-nome">Cliente</div>
+    <div class="modal-sub" id="modal-contrato">Contrato: --</div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 16px 0;">
+      <div class="detail-row" style="border:none; padding:6px 0;"><span class="label">Ping</span><span class="value" id="modal-ping">--</span></div>
+      <div class="detail-row" style="border:none; padding:6px 0;"><span class="label">Jitter</span><span class="value" id="modal-jitter">--</span></div>
+      <div class="detail-row" style="border:none; padding:6px 0;"><span class="label">Download</span><span class="value" id="modal-down">--</span></div>
+      <div class="detail-row" style="border:none; padding:6px 0;"><span class="label">Upload</span><span class="value" id="modal-up">--</span></div>
+      <div class="detail-row" style="border:none; padding:6px 0;"><span class="label">Perda</span><span class="value" id="modal-loss">--</span></div>
+      <div class="detail-row" style="border:none; padding:6px 0;"><span class="label">Wi-Fi</span><span class="value" id="modal-wifi">--</span></div>
+    </div>
+
+    <div class="recomendation-box" id="modal-recomendacao">
+      <strong>🔍 Recomendação:</strong><br>
+      <span id="modal-recom-text">Analise os dados do cliente.</span>
+    </div>
+  </div>
+</div>
+
 <script>
   (function() {
     'use strict';
 
-
-    const clientes = [
-      { id: 1, nome: 'João Silva', contrato: '12345-6', ultimoStatus: 'online', ultimoPing: 12, ultimoDown: 89, ultimoUp: 42, ultimoLoss: 0.2 },
-      { id: 2, nome: 'Maria Oliveira', contrato: '78901-2', ultimoStatus: 'online', ultimoPing: 8, ultimoDown: 112, ultimoUp: 55, ultimoLoss: 0.0 },
-      { id: 3, nome: 'Carlos Souza', contrato: '34567-8', ultimoStatus: 'warning', ultimoPing: 45, ultimoDown: 34, ultimoUp: 12, ultimoLoss: 4.7 },
-      { id: 4, nome: 'Ana Costa', contrato: '90123-4', ultimoStatus: 'offline', ultimoPing: null, ultimoDown: null, ultimoUp: null, ultimoLoss: null },
-      { id: 5, nome: 'Pedro Rocha', contrato: '56789-0', ultimoStatus: 'online', ultimoPing: 7, ultimoDown: 205, ultimoUp: 98, ultimoLoss: 0.1 },
+    // ===== DADOS MOCK =====
+    let clientes = [
+      { id: 1, nome: 'João Silva', contrato: '12345-6', status: 'online', ping: 12, jitter: 2, down: 89, up: 42, loss: 0.2, wifi: 92 },
+      { id: 2, nome: 'Maria Oliveira', contrato: '78901-2', status: 'online', ping: 8, jitter: 1, down: 112, up: 55, loss: 0.0, wifi: 98 },
+      { id: 3, nome: 'Carlos Souza', contrato: '34567-8', status: 'warning', ping: 45, jitter: 12, down: 34, up: 12, loss: 4.7, wifi: 43 },
+      { id: 4, nome: 'Ana Costa', contrato: '90123-4', status: 'offline', ping: null, jitter: null, down: null, up: null, loss: null, wifi: null },
+      { id: 5, nome: 'Pedro Rocha', contrato: '56789-0', status: 'online', ping: 7, jitter: 1, down: 205, up: 98, loss: 0.1, wifi: 100 },
     ];
 
-
+    // ===== ELEMENTOS =====
     const tabs = document.querySelectorAll('.tab-btn');
     const panels = {
       cliente: document.getElementById('panel-cliente'),
+      backend: document.getElementById('panel-backend'),
       operador: document.getElementById('panel-operador')
     };
 
-
-    const pingEl = document.getElementById('ping-value');
-    const downEl = document.getElementById('down-value');
-    const upEl = document.getElementById('up-value');
-    const lossEl = document.getElementById('loss-value');
-    const lossBadge = document.getElementById('loss-badge');
-    const logEl = document.getElementById('log-cliente');
+    // Phone elements
+    const phonePing = document.getElementById('phone-ping');
+    const phoneJitter = document.getElementById('phone-jitter');
+    const phoneDown = document.getElementById('phone-down');
+    const phoneUp = document.getElementById('phone-up');
+    const phoneLoss = document.getElementById('phone-loss');
+    const phoneWifi = document.getElementById('phone-wifi');
+    const phoneWifiLabel = document.getElementById('phone-wifi-label');
+    const phoneLog = document.getElementById('phone-log');
     const btnTestar = document.getElementById('btn-testar');
+    const phoneTime = document.getElementById('phone-time');
 
+    // Operador list
+    const listaClientes = document.getElementById('lista-clientes');
+    const sugestaoDinamica = document.getElementById('sugestao-dinamica');
 
+    // Modal
+    const modal = document.getElementById('modal-detalhes');
+    const modalFechar = document.getElementById('modal-fechar');
+
+    // ===== AUXILIARES =====
+    function updateClock() {
+      const now = new Date();
+      phoneTime.textContent = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    }
+    setInterval(updateClock, 10000);
+    updateClock();
+
+    function addPhoneLog(msg) {
+      const div = document.createElement('div');
+      div.textContent = msg;
+      phoneLog.appendChild(div);
+      phoneLog.scrollTop = phoneLog.scrollHeight;
+    }
+
+    function clearPhoneLog() {
+      phoneLog.innerHTML = '';
+    }
+
+    function getStatusText(status) {
+      const map = { online: '🟢 Online', warning: '🟡 Atenção', offline: '🔴 Offline' };
+      return map[status] || 'Desconhecido';
+    }
+
+    function getRecomendacao(cliente) {
+      if (!cliente || cliente.status === 'offline' || cliente.ping === null) {
+        return 'Cliente sem resposta. Verificar ONT/roteador e cabo de rede.';
+      }
+      if (cliente.loss > 5) return 'Perda de pacotes alta. Verificar interferências no Wi-Fi ou cabo danificado.';
+      if (cliente.ping > 60) return 'Latência elevada. Possível saturação de rede ou rota distante.';
+      if (cliente.wifi < 50) return 'Sinal Wi-Fi fraco. Aproximar o dispositivo do roteador ou usar cabo.';
+      if (cliente.jitter > 10) return 'Jitter elevado. Pode indicar instabilidade na conexão.';
+      return 'Tudo dentro dos parâmetros. Monitorar rotineiramente.';
+    }
+
+    function renderizarClientes() {
+      listaClientes.innerHTML = '';
+      clientes.forEach(cli => {
+        const item = document.createElement('div');
+        item.className = 'client-item';
+
+        const info = document.createElement('div');
+        info.className = 'client-info';
+        info.innerHTML = `
+          <span class="name">${cli.nome}</span>
+          <span class="detail">Contrato ${cli.contrato} · Ping ${cli.ping ?? '—'} ms · Down ${cli.down ?? '—'} Mbps</span>
+        `;
+
+        const right = document.createElement('div');
+        right.className = 'client-status-badge';
+
+        const tag = document.createElement('span');
+        tag.className = `status-tag ${cli.status}`;
+        tag.textContent = getStatusText(cli.status);
+
+        const btn = document.createElement('button');
+        btn.className = 'btn-outline-sm';
+        btn.textContent = 'Ver detalhes';
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          abrirModal(cli.id);
+        });
+
+        right.appendChild(tag);
+        right.appendChild(btn);
+
+        item.appendChild(info);
+        item.appendChild(right);
+
+        // Clique no item também abre
+        item.addEventListener('click', () => abrirModal(cli.id));
+
+        listaClientes.appendChild(item);
+      });
+    }
+
+    // ===== MODAL =====
+    function abrirModal(id) {
+      const cliente = clientes.find(c => c.id === id);
+      if (!cliente) return;
+
+      document.getElementById('modal-nome').textContent = cliente.nome;
+      document.getElementById('modal-contrato').textContent = `Contrato: ${cliente.contrato}`;
+      document.getElementById('modal-ping').textContent = cliente.ping ?? 'N/A';
+      document.getElementById('modal-jitter').textContent = cliente.jitter ?? 'N/A';
+      document.getElementById('modal-down').textContent = cliente.down ?? 'N/A';
+      document.getElementById('modal-up').textContent = cliente.up ?? 'N/A';
+      document.getElementById('modal-loss').textContent = cliente.loss !== null ? cliente.loss + '%' : 'N/A';
+      document.getElementById('modal-wifi').textContent = cliente.wifi !== null ? cliente.wifi + '%' : 'N/A';
+
+      const rec = getRecomendacao(cliente);
+      document.getElementById('modal-recom-text').textContent = rec;
+
+      modal.classList.add('active');
+    }
+
+    modalFechar.addEventListener('click', () => modal.classList.remove('active'));
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.remove('active');
+    });
+
+    // ===== SIMULAÇÃO DE TESTES =====
+    function simularTeste() {
+      return new Promise((resolve) => {
+        const delay = 400 + Math.random() * 800;
+        setTimeout(() => {
+          const ping = Math.round(5 + Math.random() * 45);
+          const jitter = Math.round((1 + Math.random() * 15) * 10) / 10;
+          const down = Math.round(10 + Math.random() * 200);
+          const up = Math.round(5 + Math.random() * 100);
+          const loss = Math.round((Math.random() * 7) * 10) / 10;
+          const wifi = Math.round(30 + Math.random() * 70);
+          resolve({ ping, jitter, down, up, loss, wifi });
+        }, delay);
+      });
+    }
+
+    function atualizarPhone(resultado) {
+      const { ping, jitter, down, up, loss, wifi } = resultado;
+      phonePing.textContent = ping;
+      phoneJitter.textContent = jitter.toFixed(1);
+      phoneDown.textContent = down;
+      phoneUp.textContent = up;
+      phoneLoss.textContent = loss.toFixed(1);
+
+      // Wi-Fi bars
+      const bars = phoneWifi.querySelectorAll('span');
+      const activeCount = Math.min(4, Math.max(0, Math.ceil((wifi / 100) * 4)));
+      bars.forEach((bar, idx) => {
+        bar.classList.toggle('inactive', idx >= activeCount);
+      });
+      phoneWifiLabel.textContent = wifi + '%';
+
+      // Atualiza o primeiro cliente da lista (João Silva) com os novos dados
+      const clienteExemplo = clientes[0];
+      clienteExemplo.ping = ping;
+      clienteExemplo.jitter = jitter;
+      clienteExemplo.down = down;
+      clienteExemplo.up = up;
+      clienteExemplo.loss = loss;
+      clienteExemplo.wifi = wifi;
+      if (loss < 2.0) clienteExemplo.status = 'online';
+      else if (loss < 5.0) clienteExemplo.status = 'warning';
+      else clienteExemplo.status = 'offline';
+
+      // Atualiza o backend log (mock)
+      const logBackend = document.getElementById('backend-log');
+      const now = new Date().toLocaleTimeString('pt-BR');
+      const entry = document.createElement('div');
+      entry.className = 'log-line';
+      entry.innerHTML = `<span class="time-stamp">[${now}]</span> 📱 Diagnóstico atualizado de ${clienteExemplo.nome} (Status: ${clienteExemplo.status})`;
+      logBackend.prepend(entry);
+      if (logBackend.children.length > 6) logBackend.removeChild(logBackend.lastChild);
+
+      // Atualiza a lista
+      renderizarClientes();
+
+      // Atualiza sugestão dinâmica
+      const rec = getRecomendacao(clienteExemplo);
+      sugestaoDinamica.innerHTML = `
+        <strong>🔍 Recomendação para ${clienteExemplo.nome}:</strong><br>
+        <span style="color:#1f3a57;">${rec}</span>
+      `;
+
+      // Atualiza o "Últimos diagnósticos" do backend
+      const lastTests = document.getElementById('backend-last-tests');
+      const statusIcon = clienteExemplo.status === 'online' ? '✅' : (clienteExemplo.status === 'warning' ? '⚠️' : '🔴');
+      const newLine = document.createElement('div');
+      newLine.textContent = `• ${clienteExemplo.nome} - ${now} - ${statusIcon} ${getStatusText(clienteExemplo.status)}`;
+      lastTests.prepend(newLine);
+      if (lastTests.children.length > 4) lastTests.removeChild(lastTests.lastChild);
+    }
+
+    async function executarTestes() {
+      btnTestar.disabled = true;
+      btnTestar.textContent = '⏳ Diagnosticando...';
+      clearPhoneLog();
+      addPhoneLog('🔍 Iniciando diagnóstico completo...');
+
+      try {
+        addPhoneLog('📡 Medindo ping e jitter...');
+        const resultado = await simularTeste();
+        addPhoneLog(`✅ Ping: ${resultado.ping} ms | Jitter: ${resultado.jitter} ms`);
+        addPhoneLog(`📥 Download: ${resultado.down} Mbps`);
+        addPhoneLog(`📤 Upload: ${resultado.up} Mbps`);
+        addPhoneLog(`📉 Perda: ${resultado.loss.toFixed(1)}%`);
+        addPhoneLog(`📶 Wi-Fi: ${resultado.wifi}%`);
+
+        atualizarPhone(resultado);
+        addPhoneLog('✔️ Diagnóstico concluído e enviado para a nuvem!');
+      } catch (err) {
+        addPhoneLog('❌ Erro: ' + err.message);
+      } finally {
+        btnTestar.disabled = false;
+        btnTestar.textContent = '⚡ Executar diagnóstico';
+      }
+    }
+
+    // ===== TABS =====
     tabs.forEach(btn => {
       btn.addEventListener('click', function() {
         tabs.forEach(b => b.classList.remove('active'));
@@ -495,158 +1075,35 @@
       });
     });
 
+    // ===== EVENTOS =====
+    btnTestar.addEventListener('click', executarTestes);
 
-    function addLog(msg, isGood = true) {
-      const entry = document.createElement('div');
-      entry.className = 'log-entry';
-      entry.textContent = msg;
-      logEl.appendChild(entry);
-      logEl.scrollTop = logEl.scrollHeight;
-    }
-
-    function clearLog() {
-      logEl.innerHTML = '';
-    }
-
-
-    function simularTeste() {
-      return new Promise((resolve) => {
-        const delay = 100 + Math.random() * 700;
-        setTimeout(() => {
-          const ping = Math.round(5 + Math.random() * 40);
-          const down = Math.round(10 + Math.random() * 190);
-          const up = Math.round(5 + Math.random() * 95);
-          const loss = Math.round((Math.random() * 6) * 10) / 10;
-          resolve({ ping, down, up, loss });
-        }, delay);
-      });
-    }
-
-
-    function atualizarMetricas(resultado) {
-      const { ping, down, up, loss } = resultado;
-      pingEl.textContent = ping;
-      downEl.textContent = down;
-      upEl.textContent = up;
-      lossEl.textContent = loss.toFixed(1);
-
-
-      if (loss < 1.0) {
-        lossBadge.textContent = '✅ Ótimo';
-        lossBadge.className = 'status-badge';
-      } else if (loss < 3.0) {
-        lossBadge.textContent = '⚠️ Moderado';
-        lossBadge.className = 'status-badge';
-      } else {
-        lossBadge.textContent = '❌ Alto';
-        lossBadge.className = 'status-badge fail';
+    // ===== INICIALIZAÇÃO =====
+    renderizarClientes();
+    // Seta dados iniciais no phone
+    const initial = clientes[0];
+    if (initial) {
+      phonePing.textContent = initial.ping ?? '--';
+      phoneJitter.textContent = initial.jitter ?? '--';
+      phoneDown.textContent = initial.down ?? '--';
+      phoneUp.textContent = initial.up ?? '--';
+      phoneLoss.textContent = initial.loss !== null ? initial.loss.toFixed(1) : '--';
+      if (initial.wifi) {
+        const bars = phoneWifi.querySelectorAll('span');
+        const activeCount = Math.min(4, Math.max(0, Math.ceil((initial.wifi / 100) * 4)));
+        bars.forEach((bar, idx) => bar.classList.toggle('inactive', idx >= activeCount));
+        phoneWifiLabel.textContent = initial.wifi + '%';
       }
     }
 
-
-    async function executarTestes() {
-      btnTestar.disabled = true;
-      btnTestar.textContent = '⏳ Testando...';
-      clearLog();
-      addLog('🔍 Iniciando diagnóstico de conectividade...');
-
-      try {
-        addLog('📡 Teste de ping...');
-        const resultado = await simularTeste();
-        addLog(`✅ Ping: ${resultado.ping} ms`);
-        addLog(`📥 Download: ${resultado.down} Mbps`);
-        addLog(`📤 Upload: ${resultado.up} Mbps`);
-        addLog(`📉 Perda: ${resultado.loss.toFixed(1)}%`);
-
-
-        atualizarMetricas(resultado);
-
-
-        const clienteExemplo = clientes[0];
-        clienteExemplo.ultimoStatus = resultado.loss < 3.0 ? 'online' : (resultado.loss < 5.0 ? 'warning' : 'offline');
-        clienteExemplo.ultimoPing = resultado.ping;
-        clienteExemplo.ultimoDown = resultado.down;
-        clienteExemplo.ultimoUp = resultado.up;
-        clienteExemplo.ultimoLoss = resultado.loss;
-
-        renderizarClientes();
-
-        addLog('✔️ Diagnóstico concluído com sucesso!');
-      } catch (err) {
-        addLog('❌ Erro durante os testes: ' + err.message, false);
-      } finally {
-        btnTestar.disabled = false;
-        btnTestar.textContent = '⚡ Executar testes agora';
-      }
-    }
-
-    function renderizarClientes() {
-      const container = document.getElementById('lista-clientes');
-      container.innerHTML = '';
-
-      clientes.forEach(cliente => {
-        const item = document.createElement('div');
-        item.className = 'client-item';
-
-        // Info
-        const info = document.createElement('div');
-        info.className = 'client-info';
-        info.innerHTML = `
-          <span class="name">${cliente.nome}</span>
-          <span class="detail">Contrato ${cliente.contrato} · Ping ${cliente.ultimoPing ?? '—'} ms · Down ${cliente.ultimoDown ?? '—'} Mbps</span>
-        `;
-
-        const statusDiv = document.createElement('div');
-        statusDiv.className = 'client-status';
-
-        const indicator = document.createElement('span');
-        indicator.className = 'status-indicator';
-        const dot = document.createElement('span');
-        dot.className = `status-dot ${cliente.ultimoStatus}`;
-        const label = document.createElement('span');
-        const statusMap = {
-          online: '🟢 Online',
-          warning: '🟡 Atenção',
-          offline: '🔴 Offline'
-        };
-        label.textContent = statusMap[cliente.ultimoStatus] || 'Desconhecido';
-        indicator.appendChild(dot);
-        indicator.appendChild(label);
-
-
-        const btnDetalhes = document.createElement('button');
-        btnDetalhes.className = 'btn-outline';
-        btnDetalhes.textContent = 'Ver detalhes';
-        btnDetalhes.addEventListener('click', () => {
-          alert(`📋 Detalhes de ${cliente.nome}\nContrato: ${cliente.contrato}\nStatus: ${cliente.ultimoStatus}\nPing: ${cliente.ultimoPing ?? 'N/A'} ms\nDownload: ${cliente.ultimoDown ?? 'N/A'} Mbps\nUpload: ${cliente.ultimoUp ?? 'N/A'} Mbps\nPerda: ${cliente.ultimoLoss ?? 'N/A'}%`);
-        });
-
-        statusDiv.appendChild(indicator);
-        statusDiv.appendChild(btnDetalhes);
-
-        item.appendChild(info);
-        item.appendChild(statusDiv);
-        container.appendChild(item);
-      });
-    }
-
-
-    function init() {
-      renderizarClientes();
-      
-      pingEl.textContent = '--';
-      downEl.textContent = '--';
-      upEl.textContent = '--';
-      lossEl.textContent = '--';
-      lossBadge.textContent = '—';
-      lossBadge.className = 'status-badge';
-      // Adiciona evento ao botão
-      btnTestar.addEventListener('click', executarTestes);
-    }
-
-    init();
+    // Mock inicial para sugestão
+    sugestaoDinamica.innerHTML = `
+      <strong>✅ Nenhum problema crítico no momento.</strong><br>
+      <span style="color:#6a8aaa;">Clique em um cliente para ver recomendações personalizadas.</span>
+    `;
 
   })();
 </script>
+
 </body>
 </html>
